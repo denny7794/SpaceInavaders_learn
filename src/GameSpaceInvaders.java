@@ -93,7 +93,7 @@ public class GameSpaceInvaders extends JFrame{
             cannon.move();
             //flash.show();
 //            bang.show();
-//            ray.fly();
+            ray.fly();
 //            rays.fly();
 //            wave.nextStep();
 //            if (wave.isDestroyed()) { // if the wave completely destroyed
@@ -123,7 +123,7 @@ public class GameSpaceInvaders extends JFrame{
 
         void shot() {
             //playSound(new File("sounds/shoot.wav"));
-            //ray.start(x, y);
+            ray.start(x, y);
         }
 
         int getX() { return x; }
@@ -132,6 +132,7 @@ public class GameSpaceInvaders extends JFrame{
 
         void paint(Graphics g) {
 //            if (!bang.isBang()) {
+                g.setColor(Color.GREEN);
                 g.fillRect(x, y + HEIGHT/2, WIDTH, HEIGHT/2);
                 g.fillRect(x + 2, y + HEIGHT/2 - 2, WIDTH - 4, HEIGHT/2);
                 g.fillRect(x + 10, y + 2, WIDTH - 20, HEIGHT/2);
@@ -140,8 +141,39 @@ public class GameSpaceInvaders extends JFrame{
         }
     }
 
-    class Ray {
+    class Ray { // from laser cannon
+        final int WIDTH = 2;
+        final int HEIGHT = 8;
+        final int DY = 12;
+        int x, y;
+        boolean exists;
 
+        void start(int x, int y) {
+            if (!exists) {
+                exists = true;
+                this.x = x + (cannon.getWidth() - WIDTH) / 2;
+                this.y = y - HEIGHT;
+            }
+        }
+
+        void fly() {
+            if (exists) {
+                y -= DY;
+                exists = (y + DY) > 0;
+            }
+        }
+
+        void disable() { exists = false; }
+
+        boolean isEnable() { return exists; }
+
+        int getX() { return x; }
+        int getY() { return y; }
+
+        void paint(Graphics g) {
+            g.setColor(Color.RED);
+            if (exists) g.fillRect(x, y, WIDTH, HEIGHT);
+        }
     }
 
     class Alien {
@@ -157,6 +189,7 @@ public class GameSpaceInvaders extends JFrame{
         public void paint(Graphics g) {
             super.paint(g);
             cannon.paint(g);
+            ray.paint(g);
         }
     }
 }
