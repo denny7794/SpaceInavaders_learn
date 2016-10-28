@@ -97,10 +97,10 @@ public class GameSpaceInvaders extends JFrame{
             ray.fly();
             rays.fly();
             wave.nextStep();
-//            if (wave.isDestroyed()) { // if the wave completely destroyed
-//                wave = new Wave();
-//                countLives++;
-//            }
+            if (wave.isDestroyed()) { // if the wave completely destroyed
+                wave = new Wave();
+                countLives++;
+            }
         }
     }
 
