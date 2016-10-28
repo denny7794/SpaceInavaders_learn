@@ -23,6 +23,7 @@ public class GameSpaceInvaders extends JFrame{
     final int GROUND_Y = FIELD_HEIGHT - 20;
     final int LEFT = 37; // key codes
     final int RIGHT = 39;
+    final int DOWN = 40;
     final int FIRE = 32;
     final int SHOW_DELAY = 20; // delay for animation
     final int[][][][] PATTERN_OF_ALIENS = {
@@ -95,7 +96,7 @@ public class GameSpaceInvaders extends JFrame{
 //            bang.show();
             ray.fly();
 //            rays.fly();
-//            wave.nextStep();
+            wave.nextStep();
 //            if (wave.isDestroyed()) { // if the wave completely destroyed
 //                wave = new Wave();
 //                countLives++;
@@ -176,12 +177,108 @@ public class GameSpaceInvaders extends JFrame{
         }
     }
 
-    class Alien {
+    class Alien { // for attacking wave
+        int x, y, type, view = 0;
+        int width, height = 8;
 
+        Alien(int x, int y, int type) {
+            this.x = x;
+            this.y = y;
+            this.type = type;
+            width = PATTERN_OF_ALIENS[type][view][8][0];
+        }
+
+        int getType() { return type; }
+
+        boolean isHitRay() {
+            if (ray.isEnable())
+                if ((ray.getX() >= x) && (ray.getX() <= x + width*POINT_SCALE))
+                    if (ray.getY() < y + height*POINT_SCALE) {
+                        ray.disable();
+                        return true;
+                    }
+            return false;
+        }
+
+        void nextStep(int direction) {
+            view = 1 - view; // change view each step
+            if (direction == RIGHT) x += STEP_X;
+            else if (direction == LEFT) x -= STEP_X;
+            else if (direction == DOWN) y += STEP_Y;
+        }
+
+//        void bang() { flash.enable(x, y - 2); }
+
+//        void shot() { rays.add(x + width/2, y + height); }
+
+        void paint(Graphics g) {
+            g.setColor(Color.white);
+            for (int col = 0; col < width; col++)
+                for (int row = 0; row < height; row++)
+                    if (PATTERN_OF_ALIENS[type][view][row][col] == 1)
+                        g.fillRect(col*POINT_SCALE + x, row*POINT_SCALE + y, POINT_SCALE, POINT_SCALE);
+        }
     }
 
-    class Wave {
+    class Wave { // attacking wave of aliens
+        final int[][] PATTERN = {
+                {2,2,2,2,2,2,2,2,2,2,2}, {1,1,1,1,1,1,1,1,1,1,1}, {1,1,1,1,1,1,1,1,1,1,1}, {0,0,0,0,0,0,0,0,0,0,0}, {0,0,0,0,0,0,0,0,0,0,0}};
+        volatile ArrayList<Alien> wave = new ArrayList<Alien>();
+        int numFrames = 30; // define the speed of the wave
+        int countFrames = 0;
+        int direction = RIGHT;
+        boolean stepDown = false;
+        int startX = 50;
+        int startY = 60;
 
+        Wave() {
+            for (int y = 0; y < PATTERN.length; y++)
+                for (int x = 0; x < PATTERN[y].length; x++)
+                    wave.add(new Alien(startX + x*POINT_SCALE*16 + PATTERN[y][x]*POINT_SCALE, startY + y*POINT_SCALE*16, PATTERN[y][x]));
+        }
+
+        void nextStep() {
+            if (countFrames == numFrames) {
+                if ((startX == 10) || (startX == 17*STEP_X + 10)) { // time to change direction
+                    if (!stepDown) {
+                        direction = DOWN;
+                    } else {
+                        direction = (startX == 10)? RIGHT : LEFT;
+                        stepDown = false;
+                    }
+                }
+                for (Alien alien : wave) { // wave moves and shots
+                    alien.nextStep(direction);
+//                    if (random.nextInt(10) == 9)
+//                        if (rays.getSize() < MAX_ALIEN_RAYS)
+//                            alien.shot();
+                }
+                if (direction == DOWN) {
+                    startY += STEP_Y;
+                    stepDown = true;
+                } else {
+                    startX += (direction == RIGHT)? STEP_X : -STEP_X;
+                }
+                countFrames = 0;
+            } else { countFrames++; }
+            for (Alien alien : wave) // check hit alien
+                if (alien.isHitRay()) {
+                    countScore += (alien.getType() + 1) * 10;
+//                    playSound(new File("sounds/invaderkilled.wav"));
+//                    alien.bang();
+                    wave.remove(alien);
+                    numFrames = 10 + (int)(20f/55f * wave.size()); // increase wave's speed
+                    if (countFrames > numFrames) countFrames = numFrames; // correct countFrames
+                    System.out.println(numFrames + ":" + countFrames);
+                    break;
+                }
+        }
+
+        boolean isDestroyed() { return wave.size() == 0; }
+
+        void paint(Graphics g) {
+            for (Alien alien : wave) alien.paint(g);
+        }
     }
 
     void paintTextAndLine(Graphics g) { // paint score, lives and green line
@@ -255,6 +352,7 @@ public class GameSpaceInvaders extends JFrame{
             paintNumber(g, countLives, 390, 20);
             cannon.paint(g);
             ray.paint(g);
+            wave.paint(g);
         }
     }
 }
