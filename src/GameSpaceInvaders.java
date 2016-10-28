@@ -72,24 +72,72 @@ public class GameSpaceInvaders extends JFrame{
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if ((e.getKeyCode() == LEFT) || (e.getKeyCode() == RIGHT))
-                    //cannon.setDirection(e.getKeyCode());
+                    cannon.setDirection(e.getKeyCode());
                 if (e.getKeyCode() == FIRE)
-                    //cannon.shot();
+                    cannon.shot();
             }
             public void keyReleased(KeyEvent e) {
                 if ((e.getKeyCode() == LEFT) || (e.getKeyCode() == RIGHT))
-                    //cannon.setDirection(0);
+                    cannon.setDirection(0);
             }
         });
         setVisible(true);
     }
 
-    void go() {
-
+    void go() { // main loop of game
+        while (true) {
+            try {
+                Thread.sleep(SHOW_DELAY);
+            } catch (Exception e) { e.printStackTrace(); }
+            canvas.repaint();
+            cannon.move();
+            //flash.show();
+//            bang.show();
+//            ray.fly();
+//            rays.fly();
+//            wave.nextStep();
+//            if (wave.isDestroyed()) { // if the wave completely destroyed
+//                wave = new Wave();
+//                countLives++;
+//            }
+        }
     }
 
-    class Cannon {
+    class Cannon { // laser cannon
+        final int WIDTH = 26;
+        final int HEIGHT = 16;
+        final int DX = 5;
+        int x, y, direction;
 
+        public Cannon() {
+            x = 10;
+            y = FIELD_HEIGHT - HEIGHT - 30;
+        }
+
+        void move() {
+            if (direction == LEFT && x > 10) x -= DX;
+            if (direction == RIGHT && x < FIELD_WIDTH - WIDTH - 12) x += DX;
+        }
+
+        void setDirection(int direction) { this.direction = direction; }
+
+        void shot() {
+            //playSound(new File("sounds/shoot.wav"));
+            //ray.start(x, y);
+        }
+
+        int getX() { return x; }
+        int getY() { return y; }
+        int getWidth() { return WIDTH; }
+
+        void paint(Graphics g) {
+//            if (!bang.isBang()) {
+                g.fillRect(x, y + HEIGHT/2, WIDTH, HEIGHT/2);
+                g.fillRect(x + 2, y + HEIGHT/2 - 2, WIDTH - 4, HEIGHT/2);
+                g.fillRect(x + 10, y + 2, WIDTH - 20, HEIGHT/2);
+                g.fillRect(x + 12, y, 2, 2);
+//            }
+        }
     }
 
     class Ray {
@@ -108,6 +156,7 @@ public class GameSpaceInvaders extends JFrame{
         @Override
         public void paint(Graphics g) {
             super.paint(g);
+            cannon.paint(g);
         }
     }
 }
