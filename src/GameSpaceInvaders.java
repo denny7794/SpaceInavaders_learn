@@ -239,6 +239,7 @@ public class GameSpaceInvaders extends JFrame{
         }
     }
 
+    // TODO столкновене лучей пушки и пришельцев
 
     class Alien { // for attacking wave
         int x, y, type, view = 0;
