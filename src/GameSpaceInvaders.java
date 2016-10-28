@@ -417,10 +417,12 @@ public class GameSpaceInvaders extends JFrame{
             paintTextAndLine(g);
             paintNumber(g, countScore, 110, 20);
             paintNumber(g, countLives, 390, 20);
-            cannon.paint(g);
-            ray.paint(g);
-            wave.paint(g);
-            rays.paint(g);
+            if (!gameOver) {
+                cannon.paint(g);
+                ray.paint(g);
+                wave.paint(g);
+                rays.paint(g);
+            }
         }
     }
 }
