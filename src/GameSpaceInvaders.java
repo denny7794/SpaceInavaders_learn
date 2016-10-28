@@ -48,11 +48,11 @@ public class GameSpaceInvaders extends JFrame{
     final int MAX_ALIEN_RAYS = 2;
     Canvas canvas = new Canvas();
     Cannon cannon = new Cannon();
-    BangCannon bang = new BangCannon();
+    //BangCannon bang = new BangCannon();
     Ray ray = new Ray();
     Wave wave = new Wave();
-    FlashAlien flash = new FlashAlien();
-    AlienRays rays = new AlienRays();
+    //FlashAlien flash = new FlashAlien();
+    //AlienRays rays = new AlienRays();
     Random random = new Random();
     int countScore, countLives = 3;
     boolean gameOver;
@@ -63,7 +63,25 @@ public class GameSpaceInvaders extends JFrame{
     }
 
     GameSpaceInvaders() {
-
+        setTitle(TITLE_OF_PROGRAM);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setBounds(START_LOCATION, START_LOCATION, FIELD_WIDTH + FIELD_DX, FIELD_HEIGHT + FIELD_DY);
+        setResizable(false);
+        canvas.setBackground(Color.black);
+        add(BorderLayout.CENTER, canvas);
+        addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if ((e.getKeyCode() == LEFT) || (e.getKeyCode() == RIGHT))
+                    //cannon.setDirection(e.getKeyCode());
+                if (e.getKeyCode() == FIRE)
+                    //cannon.shot();
+            }
+            public void keyReleased(KeyEvent e) {
+                if ((e.getKeyCode() == LEFT) || (e.getKeyCode() == RIGHT))
+                    //cannon.setDirection(0);
+            }
+        });
+        setVisible(true);
     }
 
     void go() {
